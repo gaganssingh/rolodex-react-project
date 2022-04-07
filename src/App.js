@@ -1,60 +1,60 @@
-import { Component } from "react";
-import "./App.css";
+import { useEffect, useState } from "react";
 import CardList from "./components/card-list/CardList.component";
 import SearchBox from "./components/search-box/SearchBox.component";
+import "./App.css";
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      users: [],
-      images: [],
-      searchTerm: "",
-    };
-  }
+const App = () => {
+  const [users, setUsers] = useState([]);
+  const [images, setImages] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  async componentDidMount() {
+  const fetchUsers = async () => {
     try {
       // Fetch users
       const userData = await fetch(
         `https://jsonplaceholder.typicode.com/users`
       );
       const users = await userData.json();
-
-      // Fetch images
-      const imageData = await fetch(`https://randomuser.me/api/?results=10`);
-      const data = await imageData.json();
-      const images = data.results.map((d) => d.picture.large);
-
-      // Set State
-      this.setState((prevState) => ({ users, images }));
+      setUsers(users);
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
-  onSearchChange = (e) =>
-    this.setState((prevState) => ({ searchTerm: e.target.value }));
+  const fetchImages = async () => {
+    // Fetch images
+    const imageData = await fetch(`https://randomuser.me/api/?results=10`);
+    const data = await imageData.json();
+    const images = data.results.map((d) => d.picture.large);
+    setImages(images);
+  };
 
-  render() {
-    const { users, searchTerm, images } = this.state;
+  useEffect(() => {
+    setLoading(true);
+    fetchUsers();
+    fetchImages();
+    setLoading(false);
+  }, []);
 
-    const filteredUsers = users.filter((user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  const onSearchChange = (e) => setSearchTerm(e.target.value.trim());
 
-    return (
-      <div className="App">
-        <h1 className="app-title">Contact List</h1>
-        <SearchBox
-          className="users-search-bar"
-          placeholder="Search Users"
-          onChangeHandler={this.onSearchChange}
-        />
-        <CardList users={filteredUsers} images={images} />
-      </div>
-    );
-  }
-}
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="App">
+      <h1 className="app-title">Contact List</h1>
+      <SearchBox
+        className="users-search-bar"
+        placeholder="Search Users"
+        onChangeHandler={onSearchChange}
+      />
+      {loading && <div class="loader">Loading...</div>}
+      <CardList users={filteredUsers} images={images} />
+    </div>
+  );
+};
 
 export default App;
