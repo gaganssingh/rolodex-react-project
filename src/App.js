@@ -1,5 +1,7 @@
 import { Component } from "react";
 import "./App.css";
+import CardList from "./components/card-list/CardList.component";
+import SearchBox from "./components/search-box/SearchBox.component";
 
 class App extends Component {
   constructor(props) {
@@ -20,7 +22,7 @@ class App extends Component {
     }
   }
 
-  handleSearch = (e) =>
+  onSearchChange = (e) =>
     this.setState((prevState) => ({ searchTerm: e.target.value }));
 
   render() {
@@ -32,17 +34,12 @@ class App extends Component {
 
     return (
       <div className="App">
-        <input
-          type="search"
-          className="search-box"
+        <SearchBox
+          className="search-bar"
           placeholder="Search Users"
-          onChange={this.handleSearch}
+          onChangeHandler={this.onSearchChange}
         />
-        {filteredUsers.map((user) => (
-          <div key={user.id}>
-            <h1>{user.name}</h1>
-          </div>
-        ))}
+        <CardList users={filteredUsers} />
       </div>
     );
   }
