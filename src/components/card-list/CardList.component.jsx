@@ -1,15 +1,17 @@
 import { Component } from "react";
+import Card from "../card/Card.component";
+import "./CardList.styles.css";
 
 export class CardList extends Component {
   render() {
+    const { users, images } = this.props;
+
     return (
-      <>
-        {this.props.users.map((user) => (
-          <div key={user.id}>
-            <h1>{user.name}</h1>
-          </div>
+      <div className="card-list">
+        {users.map((user) => (
+          <Card key={user.id} user={user} imgSrc={images[user.id - 1]} />
         ))}
-      </>
+      </div>
     );
   }
 }
